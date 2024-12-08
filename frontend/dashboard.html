@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="./css/styles-dashboard.css"/>
+    <script>
+    // Get email from URL and store in localStorage
+    const urlParams = new URLSearchParams(window.location.search);
+    const email = urlParams.get('email');
+    if (email) {
+        localStorage.setItem('userEmail', email);
+    }
+</script>
+</head>
+<body>
+    <div class="container">
+        <h1>Dashboard</h1>
+
+        <!-- Label for the document listing button -->
+        <label for="list-docs">List all uploaded documents</label>
+        <button id="list-docs" title="Click to view uploaded documents">List Documents</button>
+
+        <!-- Label for file upload -->
+        <label for="file-upload">Upload Document</label>
+        <input type="file" id="file-upload" title="Choose a document to upload" />
+
+        <!-- Upload button -->
+        <button id="upload-doc" title="Click to upload selected document">Upload Document</button>
+
+        <!-- Section for listing uploaded documents -->
+        <ul id="docs-list"></ul>
+    </div>
+<script src="./js/dashboard.js"></script>
+</body>
+</html>

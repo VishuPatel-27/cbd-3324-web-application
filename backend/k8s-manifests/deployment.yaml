@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: backend-ns
+  labels:
+    name: backend-ns
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-backend
+  namespace: backend-ns
+  labels:
+    app: flask-backend
+spec:
+  replicas: 1  # Number of Pods we want to run
+  selector:
+    matchLabels:
+      app: flask-backend
+  template:
+    metadata:
+      labels:
+        app: flask-backend
+    spec:
+      containers:
+      - name: flask-backend
+        image: gcr.io/flask-app-436123/backend
+        ports:
+        - containerPort: 5000
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-backend-service
+  namespace: backend-ns
+spec:
+  selector:
+    app: flask-backend
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+
+  type: NodePort

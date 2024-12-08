@@ -1,0 +1,8 @@
+venv
+*.env
+config
+*.dockerignore
+*-lock.json
+uploads/
+**/node_modules/
+**/__pycache__/
