@@ -1,13 +1,29 @@
 import mysql.connector
 import os
+from dotenv import load_dotenv
 
-host = os.getenv('MYSQL_HOST')
-db_user = os.getenv('MYSQL_USER')
-password = os.getenv('MYSQL_PASSWORD')
-database = os.getenv('MYSQL_DB')
+
+# Function to load .env dynamically
+def load_environment():
+
+    # Check for .env file locally
+    if os.path.exists("/app/secrets/.env"):
+        print("Loading .env from Docker secret")
+        load_dotenv("/app/secrets/.env")  # Load from Docker Swarm secret
+    else:
+        # loading the env file dynamically
+        load_dotenv()
 
 # Establish connection to MySQL database
 def create_connection():
+
+    load_environment()
+
+    host = os.getenv('MYSQL_HOST')
+    db_user = os.getenv('MYSQL_USER')
+    password = os.getenv('MYSQL_PASSWORD')
+    database = os.getenv('MYSQL_DB')
+
     try:
         connection = mysql.connector.connect(
             host=host,
@@ -57,12 +73,14 @@ def get_user(email, user_password):
                 connection.close()
 
 def check_user_credentials(email, user_password):
+    load_environment()
+
     try:
         connection = mysql.connector.connect(
-            host=host,
-            user=db_user,
-            password=password,
-            database=database
+            host=os.getenv('MYSQL_HOST'),
+            user=os.getenv('MYSQL_USER'),
+            password=os.getenv('MYSQL_PASSWORD'),
+            database=os.getenv('MYSQL_DB')
         )
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM users WHERE email=%s AND user_password=%s", (email, user_password))

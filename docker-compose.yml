@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  flask-backend:
+    # pull the image locally
+    image: flask-backend:v1.0
+    ports:
+      - "5000:5000"
+    networks:
+      - demo-network
+    secrets:
+      - source: flask-backend-env
+        target: /app/secrets/.env
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+  node-frontend:
+    # pull the image locally
+    image: node-frontend:v1.0
+    ports:
+      - "3000:3000"
+    networks:
+      - demo-network
+    environment:
+      - FLASK_SERVER_URL=http://flask-backend:5000
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+networks:
+  demo-network:
+    driver: overlay
+
+secrets:
+  flask-backend-env:
+    external: true

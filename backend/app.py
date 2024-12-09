@@ -6,7 +6,6 @@ from google.cloud import storage
 import os
 
 app = Flask(__name__)
-load_dotenv()
 
 CORS(app)
 
@@ -22,6 +21,7 @@ def register():
     if 'name' not in data:
         return jsonify({"error": "Missing 'name' in request data"}), 400
 
+    load_environment()
     name = data['name']
     email = data['email']
     user_password = data['password']
@@ -47,6 +47,7 @@ def login():
     email = data['email']
     user_password = data['password']
 
+    load_environment()
     user = get_user(email, user_password)
 
     if user:
@@ -64,11 +65,8 @@ def upload_document():
     app.logger.info(f"Received request: {request.files}")
     app.logger.info(f"Form data: {request.form}")
 
-    # # Clear existing environment variable
-    # if "GOOGLE_APPLICATION_CREDENTIALS" in os.environ:
-    #     del os.environ["GOOGLE_APPLICATION_CREDENTIALS"]
-
-    load_dotenv()
+    # Function to load .env dynamically
+    load_environment()
 
     if 'file' not in request.files:
         return jsonify({"message": "No file part in the request"}), 400
@@ -114,7 +112,8 @@ def upload_document():
 @app.route('/list-documents', methods=['POST'])
 def list_documents():
 
-    load_dotenv()
+    # Function to load .env dynamically
+    load_environment()
 
     # Verify the environment variable is set
     credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
@@ -135,6 +134,17 @@ def list_documents():
 
     documents = [blob.name.split('/')[-1] for blob in blobs if not blob.name.endswith('/')]
     return jsonify(documents)
+
+# Function to load .env dynamically
+def load_environment():
+    # Check for .env file locally
+    if os.path.exists("/app/secrets/.env"):
+        print("Loading .env from Docker secret")
+        load_dotenv("/app/secrets/.env")  # Load from Docker Swarm secret
+
+    else:
+        # loading the env file dynamically
+        load_dotenv()
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
