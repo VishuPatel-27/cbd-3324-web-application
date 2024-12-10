@@ -1,0 +1,14 @@
+frontend:
+  name: node-frontend
+  namespace: frontend-ns
+  replicas: 1
+  labels:
+    app: node-frontend
+  image:
+    repository: imv27/node-frontend
+    tag: "1.0"
+  flaskBackendUrl: "http://backend-app-service.backend-ns.svc.cluster.local:5000"
+  containerPort: 3000
+  service:
+    type: LoadBalancer
+    port: 3000

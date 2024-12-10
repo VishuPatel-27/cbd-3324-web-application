@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.frontend.name }}-deployment
+  namespace: {{ .Values.frontend.namespace }}
+  labels:
+{{- toYaml .Values.frontend.labels | nindent 4 }}
+spec:
+  replicas: {{ .Values.frontend.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.frontend.labels.app }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.frontend.labels.app }}
+    spec:
+      containers:
+      - name: {{ .Values.frontend.name }}
+        image: {{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}
+        env:
+        - name: FLASK_SERVER_URL
+          value: {{ .Values.frontend.flaskBackendUrl | quote }}
+        ports:
+        - containerPort: {{ .Values.frontend.containerPort }}

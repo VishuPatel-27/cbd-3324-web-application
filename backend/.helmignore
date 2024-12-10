@@ -1,0 +1,12 @@
+.git/
+.gitignore
+.bzr/
+.bzrignore
+.hg/
+.hgignore
+.svn/
+.vscode/
+config/
+.dockerignore
+*/__pycache__*
+.env
